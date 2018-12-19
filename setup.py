@@ -30,19 +30,19 @@ import sys
 
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
-    config = Configuration('pyDROP', parent_package, top_path,
+    config = Configuration('raincoat', parent_package, top_path,
         version = '0.0.1',
         author  = "Davide Ori and Jose Dias Neto and... PUT NAMES HERE",
         author_email = "dori@uni-koeln.com",
         description = "Calibration of radars using disdrometer data and T-matrix tables",
-        license = "MIT????",
-        url = 'https://github.com/DaveOri/disdrometer-radarcalibration',
-        download_url = 'https://github.com/DaveOri/disdrometer-radarcalibration/archive/master.zip',
+        license = "MIT",
+        url = 'https://github.com/DaveOri/raincoat',
+        download_url = 'https://github.com/DaveOri/raincoat/archive/master.zip',
         long_description = long_description,
         classifiers = [
-            "Development Status :: 1 - under development",
+            "Development Status :: 0 - under development",
             "Intended Audience :: Science/Research",
-            "License :: OSI Approved :: MIT License??????????",
+            "License :: OSI Approved :: MIT License",
             "Operating System :: should be OS Independent",
             "Programming Language :: Python",
             "Topic :: Scientific/Engineering :: Physics",
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     from numpy.distutils.core import setup
     setup(configuration=configuration,
-        packages = ['pydrop','pydrop.test','pydrop.scatTable'],        
+        packages = ['raincoat','raincoat.test','raincoat.scatTable'],        
         package_data = {},
         platforms = ['any'],
         requires = ['numpy', 'scipy'])
