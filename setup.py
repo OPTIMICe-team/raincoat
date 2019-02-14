@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     from numpy.distutils.core import setup
     setup(configuration=configuration,
-        packages = ['raincoat','raincoat.test','raincoat.scatTable'],        
+        packages = ['raincoat','raincoat.test','raincoat.scatTable','raincoat.parsivel'],        
         package_data = {},
         platforms = ['any'],
         requires = ['numpy', 'scipy'])
