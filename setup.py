@@ -28,7 +28,7 @@ Requires a lot of packages
 
 import sys
 
-def configuration(parent_package='',top_path=None):
+def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('raincoat', parent_package, top_path,
         version = '0.0.1',
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     from numpy.distutils.core import setup
     setup(configuration=configuration,
-        packages = ['raincoat','raincoat.test','raincoat.scatTable','raincoat.parsivel'],        
+        packages = ['raincoat','raincoat.test','raincoat.scatTable','raincoat.disdrometer'],        
         package_data = {},
         platforms = ['any'],
-        requires = ['numpy', 'scipy'])
+        requires = ['numpy', 'scipy', 'netCDF4'])

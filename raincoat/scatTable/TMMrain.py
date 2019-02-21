@@ -58,8 +58,8 @@ for T in temperatures:
             ray = prefactor*d**6
             print(d, rxs, ray, ext, T, f)
             table.loc[d] = T, wl, K2, rxs, ext, ray
-        # table.to_csv(str(T-273.15)[:2]+'C_'+str(f*1e-9)+'GHz.csv')
-
+        table.to_csv(str(T-273.15)[:2]+'C_'+str(f*1e-9)+'GHz.csv')
+exit()
 # %%
 
 def dB(x):
@@ -109,7 +109,8 @@ for T in temperatures:
             ray = prefactor*d**6
             print(d, rxs, ray, ext, T, f)
             table.loc[d] = T, wl, K2, rxs, ext, ray
-        # table.to_csv(str(T-273.15)[:2]+'C_'+str(f*1e-9)+'GHz.csv')
+        table.to_csv(str(T-273.15)[:2]+'C_'+str(f*1e-9)+'GHz.csv')
+
 
 ax1.plot(table['radarsx[mm2]'], table['ray[mm2]'], label='Thurai 0 deg')
 ax1.grid()
