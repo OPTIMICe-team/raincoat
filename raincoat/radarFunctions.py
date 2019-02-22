@@ -1,6 +1,15 @@
 import numpy as np
 import xarray as xr
 
+'''
+Comments:
+Somehow the procedure assumes that there is a dimension called time and another called range.
+We should be specific to that.
+
+Also we might better be strict to CF convention by default. If CF is not used the user must specify the decode time string in CF or give a function to read the string and convert to CF
+
+It would be great to have a function that can take a list of files and concatenate them already
+'''
 
 def getRadarVar(filePath, refTime, varName):
 

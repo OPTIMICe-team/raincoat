@@ -22,6 +22,13 @@ history:
         - global attributes
 '''
 
+'''
+This module is very specific to our institute configuration and works at the moment but cannot be published as it is.
+Better to pass all the insititu specific arguments as function argument with default option.
+It would be great to have a generic parser instead of one specific to our parsivel configuration, I can help on that. The script looks like it has been inherited by long time and we can take advantage of python progress to make it better
+'''
+
+
 def time2unix(datestring):
     try:
         f = datetime.datetime.strptime(datestring,"%Y%m%d%H%M%S.%f")

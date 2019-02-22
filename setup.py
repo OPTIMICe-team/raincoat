@@ -32,7 +32,7 @@ def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('raincoat', parent_package, top_path,
         version = '0.0.1',
-        author  = "Davide Ori and Jose Dias Neto and... PUT NAMES HERE",
+        author  = "Davide Ori and Sybille Schoger and Jose Dias Neto and Sabrina Schnitt and Markus Karrer and Juan Antonio Bravo-Aranda",
         author_email = "dori@uni-koeln.com",
         description = "Calibration of radars using disdrometer data and T-matrix tables",
         license = "MIT",
