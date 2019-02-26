@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 #%matplotlib inline
 
-import netCDF4 as nc
+#import netCDF4 as nc
 from netCDF4 import Dataset
 import numpy as np
-import math
 import pandas as pd
 
 def readPars(year, month, day):

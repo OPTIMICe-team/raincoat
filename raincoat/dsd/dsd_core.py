@@ -23,29 +23,56 @@ import numpy as np
 from scipy.special import gamma
 
 
-class PSD(object):
+class DSD(object):
+    def __init__(self, Dmin=0.0, Dmax=np.inf):
+
+        if (Dmin > Dmax):
+            raise AttributeError('The minimum size of any distribution must be \
+                                  smaller then its maximum size, passed Dmin is\
+                                  larger than Dmax')
+        if (Dmin < 0):
+            raise AttributeError('Dmin < 0 implies that negative diameters are \
+                                  possible whereas DSDs domains are strictly \
+                                  semidefinite positive')
+        self.Dmin=Dmin
+        self.Dmax=Dmax
+
     def __call__(self, D):
         if np.shape(D) == ():
             return 0.0
         else:
-            return np.zeros_like(D)
+             return np.zeros_like(D)
 
+    def generator(self, N):
+        """
+        Generate N samples of the distribution (probably easiest method is 
+        the cumulative normalized)
+        """
+        continue
 
-class ExponentialPSD(PSD):
-    """Exponential particle size distribution (PSD).
+    def normalizedCumulative(self):
+        """
+        Numerical method to implement cumulative distribution
+        """
+        continue
     
-    Callable class to provide an exponential PSD with the given 
-    parameters. The attributes can also be given as arguments to the 
-    constructor.
+    def moment(self, x, N=1.e5):
+        """
+        Calculate numerically the moment of order x from N samples
+        """
 
-    The PSD form is:
+
+class InverseExponential(DSD):
+    """Inverse exponential drop size distribution (DSD).
+    
+    Callable class to provide an inverse exponential DSD:
     N(D) = N0 * exp(-Lambda*D)
 
     Attributes:
-        N0: the intercept parameter.
+        N0: the intercept parameter
         Lambda: the inverse scale parameter        
         D_max: the maximum diameter to consider (defaults to 11/Lambda,
-            i.e. approx. 3*D0, if None)
+            i.e. approx. 3*D0, if None) # TODO: set to 99% of DSD volume
 
     Args (call):
         D: the particle diameter.
@@ -70,14 +97,10 @@ class ExponentialPSD(PSD):
         return psd
 
 
-class UnnormalizedGammaPSD(ExponentialPSD):
-    """Gamma particle size distribution (PSD).
+class GammaPSD(InverseExponential):
+    """Unnormalized Gamma drop size distribution (DSD).
     
-    Callable class to provide an gamma PSD with the given 
-    parameters. The attributes can also be given as arguments to the 
-    constructor.
-
-    The PSD form is:
+    Callable class to provide an gamma DSD with the given parameters:
     N(D) = N0 * D**mu * exp(-Lambda*D)
 
     Attributes:
@@ -112,7 +135,7 @@ class UnnormalizedGammaPSD(ExponentialPSD):
         
 
 
-class GammaPSD(PSD):
+class NormalizedGamma(DSD):
     """Normalized gamma particle size distribution (PSD).
     
     Callable class to provide a normalized gamma PSD with the given 
@@ -156,11 +179,16 @@ class GammaPSD(PSD):
         return psd
 
 
-class BinnedPSD(PSD):
-    """Binned gamma particle size distribution (PSD).
+class Lognormal(DSD):
+    """
+    N(D) = Nt/(sqrt(2*pi)*g(D-theta)) * exp(-(ln(D-theta)-mu)**2 / (2*sigma**2))
+    """
+
+
+class Binned(DSD):
+    """Binned drop size distribution (DSD).
     
-    Callable class to provide a binned PSD with the given bin edges and PSD
-    values.
+    Binned DSD given the bin edges and DSD values per bin.
 
     Args (constructor):
         The first argument to the constructor should specify n+1 bin edges, 

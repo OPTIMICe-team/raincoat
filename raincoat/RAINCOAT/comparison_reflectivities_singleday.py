@@ -25,8 +25,8 @@ import scipy.integrate as integrate
 from copy import deepcopy
 import string 
 
-from BinnedPSD import BinnedPSD
-from read_parsivel import readPars
+from raincoat.dsd.dsd_core import BinnedPSD
+from raincoat.disdrometer.read_parsivel import readPars
 from FWD_sim import FWD_sim
 import plot_func
 

@@ -4,11 +4,11 @@
 import netCDF4 as nc
 from netCDF4 import Dataset
 import numpy as np
-import math
+#import math # unused after switch to np.pi 
 import pandas as pd
-from csv import DictReader
+#from csv import DictReader # UNUSED
 
-from BinnedPSD import BinnedPSD
+from raincoat.dsd.dsd_core import BinnedPSD
 
 
 
@@ -50,7 +50,7 @@ def FWD_sim(filename, time, log10_NPar, bin_edges):
 	K2 = scattab_df.loc[1,'K2']
 
 	#integration constant
-	int_const = wavelen**4 / ((math.pi)**5 *K2)
+	int_const = wavelen**4 / (np.pi**5 * K2)
 
 	#variables
 	D = scattab_df.loc[:,diameter]
@@ -86,8 +86,8 @@ def FWD_sim(filename, time, log10_NPar, bin_edges):
 		Z_pars[t] = int_const * wband_sim.sum()*delta#np.trapz(y, dx = delta)
 
 	#convert Ze from mm⁶/m³ into dBZ
-	Ze_Pars_TM_dbz = 10 * np.ma.log10(np.abs(Z_pars))
-	Ze_Pars_D6_dbz = 10 * np.ma.log10(np.abs(ZD6_pars))
+	Ze_Pars_TM_dbz = 10.0 * np.ma.log10(np.abs(Z_pars))
+	Ze_Pars_D6_dbz = 10.0 * np.ma.log10(np.abs(ZD6_pars))
 
 	#save attenuation, d6 and tmm Ze into series and dataframe
 	A_s = pd.Series(data=A, index=time)
