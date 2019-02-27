@@ -1,3 +1,5 @@
+
+from __future__ import print_function
 import numpy as np
 
 import datetime
@@ -200,7 +202,7 @@ def readASCII(logfile, site):     #valid for reading in .logs later than April 1
 
 
         #1/0
-        #print 'len(line)', len(line), rowlen, len(line) == rowlen, 'len(cols)', len(cols), len(cols) == 1107
+        #print('len(line)', len(line), rowlen, len(line) == rowlen, 'len(cols)', len(cols), len(cols) == 1107)
 
         for i,cname in enumerate(colnames):         # loop through columns
             #if len(line) == rowlen :# and cols[14] < 2:     # check status of parsivel: if 0 or 1: sensor usable, if 2 or 3: not usable.

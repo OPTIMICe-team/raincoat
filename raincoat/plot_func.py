@@ -7,6 +7,7 @@ Created on Tue Jan  1 13:28:38 2019
 Functions to Plot Radar and Parsivel Data
 """
 
+from __future__ import print_function
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -39,7 +40,7 @@ def plotMRR(data, start, end, height, strDate, plotId,figTitle, plot):
     if plot == True: 
         out = plotId+'_'
         plt.savefig(out+figTitle+'.png', format='png', dpi=200,bbox_inches='tight')
-        print out+figTitle+'.png'    
+        print(out+figTitle+'.png')
     
     return plt.show()
 
@@ -75,7 +76,7 @@ def plot_W_Band(data, start, end, height, strDate, plotId, figTitle, plot):
     if plot == True: 
         out = plotId+'_'
         plt.savefig(out+figTitle+'.png', format='png', dpi=200,bbox_inches='tight')
-        print out+figTitle+'.png'
+        print(out+figTitle+'.png')
 
     return plt.show()
 
@@ -103,7 +104,7 @@ def plotPARS(data, start, end, height, strDate, plotId,figTitle, plot):
     if plot == True: 
         out = plotId+'_'
         plt.savefig(out+figTitle+'.png', format='png', dpi=200,bbox_inches='tight')
-        print out+figTitle+'.png'
+        print(out+figTitle+'.png')
     return plt.show()
     
 def refl_check(data, start, end, height, strDate, figTitle,epoch):
