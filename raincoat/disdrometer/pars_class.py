@@ -31,21 +31,21 @@ def pars_class():
 	pars_class[30:32,1] = 3.
 
 	j = 0
-	pars_class[0,0] = 0.062
+	pars_class[0,0] = 0.0625 # changed to avoid bin width mismatch, anyway better to have a mismatch in the lower part, first two classes should also be 0 because smaller than parsivel sensitivity
 	for i in range(1,32):
-		if i < 10 or (i > 10 and i < 15) or (i > 15 and i < 20) or (i > 20 and i < 25) or (i > 25 and i < 30) or (i > 30):
-		    pars_class[i,0] = pars_class[i-1,0] + pars_class[i,1]
+		pars_class[i,0] = pars_class[i-1,0] + 0.5*(pars_class[i-1,1] + pars_class[i,1])
+		# if i < 10 or (i > 10 and i < 15) or (i > 15 and i < 20) or (i > 20 and i < 25) or (i > 25 and i < 30) or (i > 30):
+		#     pars_class[i,0] = pars_class[i-1,0] + pars_class[i,1]
 
-		const = [0.188, 0.375, 0.75, 1.5, 2.5]
-		if i == 10 or i == 15 or i == 20 or i == 25 or i == 30:
-		    pars_class[i,0] = pars_class[i-1,0] + const[j]
-		    j = j + 1
+		# const = [0.188, 0.375, 0.75, 1.5, 2.5]
+		# if i == 10 or i == 15 or i == 20 or i == 25 or i == 30:
+		#     pars_class[i,0] = pars_class[i-1,0] + const[j]
+		#     j = j + 1
 
 		#print pars_class[i,0]
-		bin_edges[i+1,0] = pars_class[i,0] + pars_class[i,1]/2
+		#bin_edges[i+1,0] = pars_class[i,0] + pars_class[i,1]/2
 
 
 	bin_edges[0,0] = 0.
-	bin_edges[1,0] = pars_class[0,0] + pars_class[0,1]/2
-	
+	bin_edges[1:,0] = pars_class[:,0] + pars_class[:,1]*0.5
 	return pars_class, bin_edges

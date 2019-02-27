@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import scipy as sc
 from datetime import datetime, timedelta
+import glob
 #import os #UNUSED in not commented part
 # import gzip #UNUSED
 #import csv #UNUSED
@@ -25,10 +26,12 @@ from datetime import datetime, timedelta
 #from copy import deepcopy #UNUSED
 #import string 
 
-from raincoat.dsd.dsd_core import BinnedPSD
+from raincoat.dsd.dsd_core import Binned
 from raincoat.disdrometer.read_parsivel import readPars
-from FWD_sim import FWD_sim
-import plot_func
+from raincoat.FWD_sim import FWD_sim
+import raincoat.plot_func
+
+import raincoat.disdrometer.pars_class as pc
 
 #******************************************************************************
 #Definitions and Functions
@@ -50,23 +53,34 @@ pars_class[20:25,1] = 1.
 pars_class[25:30,1] = 2.
 pars_class[30:32,1] = 3.
 
-j = 0
-pars_class[0,0] = 0.062
-for i in range(1,32):
-    if i < 10 or (i > 10 and i < 15) or (i > 15 and i < 20) or (i > 20 and i < 25) or (i > 25 and i < 30) or (i > 30):
-        pars_class[i,0] = pars_class[i-1,0] + pars_class[i,1]
+# j = 0
+# pars_class[0,0] = 0.062
+# for i in range(1,32):
+#     if i < 10 or (i > 10 and i < 15) or (i > 15 and i < 20) or (i > 20 and i < 25) or (i > 25 and i < 30) or (i > 30):
+#         pars_class[i,0] = pars_class[i-1,0] + pars_class[i,1]
 
-    const = [0.188, 0.375, 0.75, 1.5, 2.5]
+#     const = [0.188, 0.375, 0.75, 1.5, 2.5]
         
-    if i == 10 or i == 15 or i == 20 or i == 25 or i == 30:
-        pars_class[i,0] = pars_class[i-1,0] + const[j]
-        j = j + 1
+#     if i == 10 or i == 15 or i == 20 or i == 25 or i == 30:
+#         pars_class[i,0] = pars_class[i-1,0] + const[j]
+#         j = j + 1
         
-    bin_edges[i+1,0] = pars_class[i,0] + pars_class[i,1]/2
+#     bin_edges[i+1,0] = pars_class[i,0] + pars_class[i,1]/2
 
 
-bin_edges[0,0] = 0.
-bin_edges[1,0] = pars_class[0,0] + pars_class[0,1]/2
+# bin_edges[0,0] = 0.
+# bin_edges[1,0] = pars_class[0,0] + pars_class[0,1]/2
+
+pars_class, bin_edges = pc.pars_class()
+# Create a lists of parsivel and radar data
+disdrofiles = glob.glob('../samplefiles/parsivel/parsivel_nya*.nc')
+radarfiles = glob.glob('../samplefiles/radar/181202*.nc')
+
+start = pd.to_datetime('2018/09/06 01:00')
+end = pd.to_datetime('2018/09/06 03:30')
+
+print(start)
+print(end)
 
 #******************************************************************************
 #Events, Time and Height 
@@ -77,84 +91,91 @@ height_bot = 120
 height_top = 200
 
 #-Time definition
-year = '2017'
-month = '09'
-day = '16'
+# year = '2017'
+# month = '09'
+# day = '16'
 
-hourBegin = '12'
-hourEnd = '23'
+# hourBegin = '12'
+# hourEnd = '23'
 
-minBegin = '00'
-minEnd =  '00'
+# minBegin = '00'
+# minEnd =  '00'
 
-secBegin = '00'
-secEnd = '59'
+# secBegin = '00'
+# secEnd = '59'
 
-millisecBegin = '00'
-millisecEnd = '59'
+# millisecBegin = '00'
+# millisecEnd = '59'
 
-#-----------------
-strDate = ('').join([year,month,day])
+# #-----------------
+# strDate = ('').join([year,month,day])
 
-timeStart = ('').join([hourBegin, minBegin])
-timeEnd = ('').join([hourEnd, minEnd])
+# timeStart = ('').join([hourBegin, minBegin])
+# timeEnd = ('').join([hourEnd, minEnd])
 
-start = pd.datetime(int(year), int(month), int(day),
-            int(hourBegin), int(minBegin),
-            int(secBegin))
+# start = pd.datetime(int(year), int(month), int(day),
+#             int(hourBegin), int(minBegin),
+#             int(secBegin))
 
-end = pd.datetime(int(year), int(month), int(day),
-          int(hourEnd), int(minEnd), int(secEnd))
+# end = pd.datetime(int(year), int(month), int(day),
+#           int(hourEnd), int(minEnd), int(secEnd))
 
 #- Definition of height range to extract the data
-height = (height_bot, height_top)
+#height = (height_bot, height_top)
 
-fileDate = ('').join([year, month, day])
+#fileDate = ('').join([year, month, day])
 
-heightBot = str(height[0])
-heightTop = str(height[1])
+#heightBot = str(height[0])
+#heightTop = str(height[1])
 
-savepath = '/home/sschoger/RAINCOAT/'
-plotId = ('_').join([fileDate, timeStart, timeEnd, heightBot, heightTop])
+#savepath = '/home/sschoger/RAINCOAT/'
+#plotId = ('_').join([fileDate, timeStart, timeEnd, heightBot, heightTop])
 #print plotId
 
 #- To save the plots use plot = True
 #plot = False
-plot = True
+#plot = True
 
 #******************************************************************************
 #Rain Scattering Table and Calculation of new W-Band Reflectivity
 #******************************************************************************
 
 #path of rain scattering tables
-filepath_rainscat = '/data/optimice/scattering_databases/rain/'
+filepath_rainscat = '../raincoat/scatTable'
 #filename = filepath_rainscat + '0.C_94.0GHz.csv'
-filename = filepath_rainscat + '10C_94.0GHz.csv'
+filename = filepath_rainscat + '10C_9.6GHz.csv'
 	
 
 #******************************************************************************
 #Parsivel Calculations
 #******************************************************************************
+disdroList = [readPars(i) for i in disdrofiles]
+pDF = pd.concat([i[0] for i in disdroList]).sort_index()
+nDF = pd.concat([i[1] for i in disdroList]).sort_index()
+vDF = pd.concat([i[2] for i in disdroList]).sort_index()
 
-pars_tup  = readPars(year,month,day)
-parsDataFrame_parsZe = pars_tup[0]
-tPar = pars_tup[1]
-timesPar = pars_tup[2]
-log10_NPar	= pars_tup[3]
-zPar = pars_tup[4]
-vPar = pars_tup[5]
-rainratePar = pars_tup[6]
+pDF = pDF[start:end]
+nDF = nDF[start:end]
+vDF = vDF[start:end]
+
+# parsDataFrame_parsZe = pars_tup[0]
+# tPar = pars_tup[1]
+# timesPar = pars_tup[2]
+# log10_NPar	= pars_tup[3]
+# zPar = pars_tup[4]
+# vPar = pars_tup[5]
+# rainratePar = pars_tup[6]
 
 
 DPars = pars_class[:,0] #[mm]
-DPars_m = DPars*1e-3 # [m]
+#DPars_m = DPars*1e-3 # [m]
 
-#calculate Rain Rate from Parsivel velocity
-rho_w = 997 #[kg/m3]
-rrmoment_int = (vPar*(10.0**log10_NPar)).T*((DPars_m**3))
+#calculate Rain Rate from Parsivel velocity ## THIS IS WRONG TO ME ... VELOCITY CLASSES DO NOT CORRESPOND TO DIAMETER CLASSES
+#rho_w = 997 #[kg/m3]
+#rrmoment_int = (vPar*(10.0**log10_NPar)).T*((DPars_m**3)) # HERE THERE MIGHT BE ALSO A PROBLEM WITH MEASURING UNITS
 
 #rain rate in mm/h
-rrPars_calc = 3600 * rho_w*np.pi/6 *  sc.integrate.trapz(np.nan_to_num(rrmoment_int), x=  pars_class[:,1])
+#rPars_calc = 3600 * rho_w*np.pi/6 *  sc.integrate.trapz(np.nan_to_num(rrmoment_int), x=  pars_class[:,1])
 #print rrPars
 
 FWD_tup = FWD_sim(filename, timesPar, log10_NPar, bin_edges)

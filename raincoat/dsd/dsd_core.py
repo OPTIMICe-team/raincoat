@@ -48,13 +48,13 @@ class DSD(object):
         Generate N samples of the distribution (probably easiest method is 
         the cumulative normalized)
         """
-        continue
+        pass
 
     def normalizedCumulative(self):
         """
         Numerical method to implement cumulative distribution
         """
-        continue
+        pass
     
     def moment(self, x, N=1.e5):
         """

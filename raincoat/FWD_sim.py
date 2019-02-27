@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 #from csv import DictReader # UNUSED
 
-from raincoat.dsd.dsd_core import BinnedPSD
+from raincoat.dsd.dsd_core import Binned
 
 
 
