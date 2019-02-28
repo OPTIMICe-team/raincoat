@@ -64,13 +64,13 @@ def FWD_sim(filename, time, log10_NPar, bin_edges):
 
 	for t, val in enumerate(time):
 		#upscale parsivel resolution
-		N_ups = (10.0**log10_NPar[:,t])
+		N_ups = (10.0**log10_NPar[:,t]) # mm**-1 m**-3
 
 		#convert all nan to zero
 		N_ups = np.nan_to_num(N_ups)
 
 		#calculate new PSD from parsivel bin_edges and upscaled parsivel psd
-		PSD = BinnedPSD(bin_edges,N_ups)
+		PSD = Binned(bin_edges,N_ups)
 
 		#calculate Attenuation with Ai = 2.0 * 4.343e-3 * int ext_xsect(D) * N(D) * dD # Correction for 2way
 		int_atten = scattab_df.loc[:,extxs]*PSD(diameter_ups)
@@ -79,19 +79,23 @@ def FWD_sim(filename, time, log10_NPar, bin_edges):
 		#calculate upscaled reflectivity values with radar cross section from TMatrix Table (tm)
 		#diameter**6 equivalent reflectivity
 		d6 = PSD(diameter_ups)*scattab_df.loc[:,diameter]**6
-		ZD6_pars[t] = d6.sum()*delta
+		ZD6_pars[t] = d6.sum()*delta # mm**6 m**-3
 		
 		#w_band equivalent reflectivity
 		wband_sim = PSD(diameter_ups)*scattab_df.loc[:,radarxs]
-		Z_pars[t] = int_const * wband_sim.sum()*delta#np.trapz(y, dx = delta)
+		Z_pars[t] = int_const * wband_sim.sum()*delta # mm**6 m**-3
 
 	#convert Ze from mm⁶/m³ into dBZ
 	Ze_Pars_TM_dbz = 10.0 * np.ma.log10(np.abs(Z_pars))
 	Ze_Pars_D6_dbz = 10.0 * np.ma.log10(np.abs(ZD6_pars))
 
 	#save attenuation, d6 and tmm Ze into series and dataframe
-	A_s = pd.Series(data=A, index=time)
-	parsDataFrame_TM = pd.DataFrame(data=Ze_Pars_TM_dbz,columns=['Ze'], index=time)
-	D6parsDataFrame = pd.DataFrame(data=Ze_Pars_D6_dbz,columns=['Ze'], index=time)  
+	#A_s = pd.Series(data=A, index=time)
+	#parsDataFrame_TM = pd.DataFrame(data=Ze_Pars_TM_dbz,columns=['Ze'], index=time)
+	#D6parsDataFrame = pd.DataFrame(data=Ze_Pars_D6_dbz,columns=['Ze'], index=time)
 
-	return A_s, parsDataFrame_TM, D6parsDataFrame  
+	#return A_s, parsDataFrame_TM, D6parsDataFrame
+	outDF = pd.DataFrame(data=Ze_Pars_TM_dbz,columns=['Ze_tmm'], index=time)
+	outDF['Ze_ray'] = Ze_Pars_D6_dbz
+	outDF['A'] = A
+	return outDF

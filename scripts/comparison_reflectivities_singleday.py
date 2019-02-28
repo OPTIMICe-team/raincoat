@@ -141,7 +141,7 @@ height_top = 200
 #******************************************************************************
 
 #path of rain scattering tables
-filepath_rainscat = '../raincoat/scatTable'
+filepath_rainscat = '../raincoat/scatTable/'
 #filename = filepath_rainscat + '0.C_94.0GHz.csv'
 filename = filepath_rainscat + '10C_9.6GHz.csv'
 	
@@ -178,7 +178,8 @@ DPars = pars_class[:,0] #[mm]
 #rPars_calc = 3600 * rho_w*np.pi/6 *  sc.integrate.trapz(np.nan_to_num(rrmoment_int), x=  pars_class[:,1])
 #print rrPars
 
-FWD_tup = FWD_sim(filename, timesPar, log10_NPar, bin_edges)
+#FWD_tup = FWD_sim(filename, timesPar, log10_NPar, bin_edges)
+fwd_DF = FWD_sim(filename, pDF.index, nDF.values.T, bin_edges)
 A_s = FWD_tup[0]
 parsDataFrame_TM = FWD_tup[1]
 D6parsDataFrame = FWD_tup[2]
