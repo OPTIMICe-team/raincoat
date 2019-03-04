@@ -62,4 +62,4 @@ if __name__ == "__main__":
         packages = ['raincoat','raincoat.test','raincoat.scatTable','raincoat.disdrometer','raincoat.dsd'],
         package_data = {},
         platforms = ['any'],
-        requires = ['numpy', 'scipy', 'netCDF4'])
+        requires = ['numpy', 'scipy', 'netCDF4', 'pandas', 'xarray', 'pytmatrix'])
