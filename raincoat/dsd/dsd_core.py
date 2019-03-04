@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Copyright (C) 2019 Davide Ori and RAINCOAT team - University of Cologne
 
@@ -19,8 +21,34 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
+""" DSD module
+Module class library to provide interface to commonly used DSDs form and in
+particular the Binned DSD which is ment to reproduce observational data provided
+by disdrometers
+
+The module also provide interfaces to fit analytical DSDs form to data using
+common fitting methods such as the method of moments.
+
+"""
+
 import numpy as np
 from scipy.special import gamma
+
+def between(x, y, xmin, xmax):
+    """
+    Set to zero the values of x that are outside the interval [xmin, xmax]
+
+    Args:
+        x (array-like): The coordinates of the array to be cut
+        y (array-like): The array to be cut
+        xmin (scalar): The minimum value of x
+        xmax (scalar): The maximum value of x
+
+    Returns:
+        y (array-like): values outside of the domain [xmin, xmax] are set to 0
+    """
+
+    return np.heaviside(x-xmin,1)*np.heaviside(-x-xmax,1)*y
 
 
 class DSD(object):
@@ -34,8 +62,8 @@ class DSD(object):
             raise AttributeError('Dmin < 0 implies that negative diameters are \
                                   possible whereas DSDs domains are strictly \
                                   semidefinite positive')
-        self.Dmin=Dmin
-        self.Dmax=Dmax
+        self.Dmin = Dmin
+        self.Dmax = Dmax
 
     def __call__(self, D):
         if np.shape(D) == ():
@@ -132,15 +160,54 @@ class GammaPSD(InverseExponential):
         else:
             psd[(D > self.D_max) | (D == 0)] = 0.0
         return psd
-        
+
+
+
+class Lognormal(DSD):
+    """Lognormal drop size distribution (DSD)
+
+    Callable object to provide a lognormal drop size distribution with the given
+    parameters
+
+    The DSD form is:
+    N(D) = Nt/(sqrt(2*pi)*g(D-theta)) * exp(-(ln(D-theta)-mu)**2 / (2*sigma**2))
+
+    Attributes:
+        Nt:
+        g:
+        theta:
+        mu:
+        sigma:
+
+    """
+
+    def __init__(self, Nt=1., g=1., theta=1., mu=0., sigma=1.):
+        """
+        """
+        self.Nt = Nt
+        self.g = g
+        self.theta = theta
+        self.mu = mu
+        self.sigma = sigma
+
+    def __call__(self, D):
+        coeff = Nt/(np.sqrt(2*np.pi) * g * (D - theta))
+        expon = np.exp(-(np.log(D - theta) -mu)**2 / (2. * sigma**2))
+        psd = coeff * expon
+        psd[D > Dmax] = 0.0
+        psd[D < Dmin] = 0.0
+        return psd
+
 
 
 class NormalizedGamma(DSD):
-    """Normalized gamma particle size distribution (PSD).
+    """Normalized gamma particle size distribution (DSD).
     
-    Callable class to provide a normalized gamma PSD with the given 
-    parameters. The attributes can also be given as arguments to the 
-    constructor.
+    Callable class to provide a normalized gamma DSD with the given 
+    parameters.
+
+    TODO: the value of 3.67 comes from observation that RR is proportional to
+    3.67th moment of the DSD, not sure if that is still ok 
 
     The PSD form is:
     N(D) = Nw * f(mu) * (D/D0)**mu * exp(-(3.67+mu)*D/D0)
@@ -157,7 +224,7 @@ class NormalizedGamma(DSD):
         D: the particle diameter.
 
     Returns (call):
-        The PSD value for the given diameter.    
+        The DSD value for the given diameter.    
         Returns 0 for all diameters larger than D_max.
     """
 
@@ -177,12 +244,6 @@ class NormalizedGamma(DSD):
         else:
             psd[(D > self.D_max) | (D==0.0)] = 0.0
         return psd
-
-
-class Lognormal(DSD):
-    """
-    N(D) = Nt/(sqrt(2*pi)*g(D-theta)) * exp(-(ln(D-theta)-mu)**2 / (2*sigma**2))
-    """
 
 
 class Binned(DSD):

@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
-#%matplotlib inline
 
-import netCDF4 as nc
-from netCDF4 import Dataset
 import numpy as np
-#import math # unused after switch to np.pi 
 import pandas as pd
-#from csv import DictReader # UNUSED
 
 from raincoat.dsd.dsd_core import Binned
 
@@ -89,12 +84,6 @@ def FWD_sim(filename, time, log10_NPar, bin_edges):
 	Ze_Pars_TM_dbz = 10.0 * np.ma.log10(np.abs(Z_pars))
 	Ze_Pars_D6_dbz = 10.0 * np.ma.log10(np.abs(ZD6_pars))
 
-	#save attenuation, d6 and tmm Ze into series and dataframe
-	#A_s = pd.Series(data=A, index=time)
-	#parsDataFrame_TM = pd.DataFrame(data=Ze_Pars_TM_dbz,columns=['Ze'], index=time)
-	#D6parsDataFrame = pd.DataFrame(data=Ze_Pars_D6_dbz,columns=['Ze'], index=time)
-
-	#return A_s, parsDataFrame_TM, D6parsDataFrame
 	outDF = pd.DataFrame(data=Ze_Pars_TM_dbz,columns=['Ze_tmm'], index=time)
 	outDF['Ze_ray'] = Ze_Pars_D6_dbz
 	outDF['A'] = A

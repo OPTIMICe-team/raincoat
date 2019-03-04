@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-#%matplotlib inline
 
-#import netCDF4 as nc
-from netCDF4 import Dataset
+import netCDF4 as nc
 import numpy as np
 import pandas as pd
 
@@ -12,9 +10,6 @@ def readPars(fileName):
         
         Arguments
         ---------
-        #year
-        #month
-        #day
         fileName of the .nc parsivel data file
         
         Returns
@@ -28,21 +23,8 @@ def readPars(fileName):
 		rainratePar			 : original rainrate
     """
 
-	#Parsivel data path
-	#parsPath = '/data/obs/site/nya/parsivel/l1'
-	
-	#join date to get data from right folders
-	#datePath = ('/').join([year,  month, day])
-	
-	#join date to get right name for file
-	#strDate = ('').join([year,month,day])
-	
-	#fileName = 'parsivel_nya_'+strDate+'.nc'
-	
-	#parsFile = ('/').join([parsPath, datePath, fileName])
-
 	#Reading the NetCDF File from Parsivel Data
-	parsNC = Dataset(fileName, 'r')
+	parsNC = nc.Dataset(fileName, 'r')
 
 	zPar_raw = parsNC.variables['Ze'][:] 				# dB
 	tPar_raw = parsNC.variables['time'][:] 				# seconds since 1/1/1970 00:00:00
