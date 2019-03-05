@@ -94,7 +94,7 @@ def getFlatVar(dataArray):
     """
 
     dataFlat = dataArray.values.flatten()
-    dataFlat = dataFlat[~ np.isnan(dataFlat)]
+    dataFlat = dataFlat[~ np.isnan(dataFlat)] # Could it be reduced to [np.isfinite(dataFlat)] ???
     dataFlat = dataFlat[~ np.isinf(dataFlat)]
 
     return dataFlat

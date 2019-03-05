@@ -10,9 +10,40 @@ import pandas as pd
 
 from pytmatrix.tmatrix import Scatterer
 from pytmatrix import tmatrix_aux, orientation, radar, scatter
-from refractiveIndex import water
-from refractiveIndex import utilities as ref_utils
-import matplotlib.pyplot as plt
+import water
+import utilities as ref_utils
+
+class scatTable(object):
+    """ Class to compute the scattering properties of a range of drop sizes
+
+    Attributes:
+        frequency - scalar: frequency of the electromagnetic wave [GHz]
+        n - complex scalar: complex refractive index of water
+        sizes - array: vector of sizes of drops for which scattering proparties
+                       have to be computed
+        canting - scalar: if not None (default value) the scattering properties
+                          are averaged over a gaussian distribution of pitch
+                          angles with mean=0 and standard deviation [deg] 
+                          defined by the canting attribute [deg]
+        aspect_ratio_func - scalar or function: defines a constant aspect ratio
+                            for the raindrops or a function that returns the 
+                            aspect-ratio according to the drop size
+        elevation_angle - scalar: elevation angle of the observing radar [deg].
+                                  90 (default value) means vertically pointing
+                                  and 0 means no elevation (horizontal scan).
+
+    Methods:
+    """
+
+    def __init__(frequency, n, sizes, canting=None, elevation=90.):
+
+        self.frequency = frequency
+        self.n = n
+        self.sizes = sizes
+        self.canting = canting
+        self.elevation = elevation
+
+
 
 try:
     from sys import argv

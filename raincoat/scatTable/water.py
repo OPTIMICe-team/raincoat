@@ -1,20 +1,24 @@
-""" refractive.ice module.
+""" water refractive index model module.
 
-    Copyright (C) 2017 - 2018 Davide Ori dori@uni-koeln.de
-    Institute for Geophysics and Meteorology - University of Cologne
+Copyright (C) 2017 - 2019 Davide Ori dori@uni-koeln.de
+Institute for Geophysics and Meteorology - University of Cologne
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 This module provides a list of water refractive index models to compute the
 dielectric properties of water according to the requested frequency and
@@ -52,18 +56,20 @@ def turner_kneifel_cadeddu(temperature, frequency):
 
         SPECIAL MODEL FOR SUPERCOOLED LIQUID WATER
 
-    It was built using both laboratory observations (primarily at warm temperature) and 
-    field data observed by MWRs at multiple frequency at supercool temperature. The field
-    data were published in Kneifel et al. JAMC 2014.  The strength of the TKC model is the 
-    use of an optimal estimation framework to determine the empirical coefficients of the 
+    It was built using both laboratory observations (primarily at warm
+    temperature) and field data observed by MWRs at multiple frequency at 
+    supercool temperature. The field data were published in 
+    Kneifel et al. JAMC 2014.  The strength of the TKC model is the use of an
+    optimal estimation framework to determine the empirical coefficients of the 
     double-Debye model.  A full description of this model is given in
 
-        Turner, D.D., S. Kneifel, and M.P. Cadeddu, 2016: An improved liquid
-        water absorption model in the microwave for supercooled liquid clouds.
-        J. Atmos. Oceanic Technol., 33(1), pp.33-44, doi:10.1175/JTECH-D-15-0074.1.
+    Turner, D.D., S. Kneifel, and M.P. Cadeddu, 2016: An improved liquid
+    water absorption model in the microwave for supercooled liquid clouds.
+    J. Atmos. Oceanic Technol., 33(1), pp.33-44, doi:10.1175/JTECH-D-15-0074.1.
 
-        Note that the model is designed to operate over the frequency range from 0.5 to 500
-    GHz, and temperature from -40 degC to +50 degC; only for freshwater (no salinity)
+    Note that the model is designed to operate over the frequency range 
+    from 0.5 to 500 GHz, and temperature from -40 degC to +50 degC; 
+    only for freshwater (no salinity)
 
     Parameters
     ----------
@@ -75,7 +81,8 @@ def turner_kneifel_cadeddu(temperature, frequency):
     Returns
     -------
     nd - complex
-        Relative dielectric constant of ice at the requested frequency and temperature
+        Relative dielectric constant of ice at the requested frequency 
+        and temperature
 
     Raises
     ------
@@ -218,15 +225,9 @@ def ellison(temperature, frequency):
     return eps1 + 1j*eps2
 
 
-def pamtra_water(temperature, frequency):
-    return ellison(temperature, frequency)
-# PLACEHOLDER FOR WHAT PAMTRA IS CURRENTLY COMPUTING
-
-##############################################################################
-
-
 def eps(temperature, frequency, model="Ellison"):
-    """Water complex relative dielectric constant according to the requested model
+    """Water complex relative dielectric permittivity according to the 
+       requested model
 
     Parameters
     ----------
