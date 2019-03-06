@@ -1,17 +1,48 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Mar 16 15:29:23 2018
+from __future__ import print_function
 
-@author: dori
+"""
+Copyright (C) 2019 Davide Ori and RAINCOAT team - University of Cologne
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
+
+""" TMMrain module
+Python class to compute the polarimetric scattering properties of a series of
+raindrop sizes according to specified parameters. The class acts as an interface
+to the pytmatrix package which implements the T-Matrix method for single 
+spheroids.
+
 """
 import numpy as np
 import pandas as pd
 
 from pytmatrix.tmatrix import Scatterer
-from pytmatrix import tmatrix_aux, orientation, radar, scatter
-import water
-import utilities as ref_utils
+from pytmatrix import tmatrix_aux
+from pytmatrix import orientation
+from pytmatrix import radar
+from pytmatrix import scatter
+
+from . import utilities
+
+c = 299792458. # [m/s] speed of light in vacuum
+columns =  ['radarXSh[mm2]', 'radarXSv[mm2]', 
+            'extxs[mm2]', 'ray[mm2]', 'sKdp[mm2]', 'aspect_ratio']
 
 class scatTable(object):
     """ Class to compute the scattering properties of a range of drop sizes
@@ -27,89 +58,91 @@ class scatTable(object):
                           defined by the canting attribute [deg]
         aspect_ratio_func - scalar or function: defines a constant aspect ratio
                             for the raindrops or a function that returns the 
-                            aspect-ratio according to the drop size
-        elevation_angle - scalar: elevation angle of the observing radar [deg].
-                                  90 (default value) means vertically pointing
-                                  and 0 means no elevation (horizontal scan).
-
-    Methods:
+                            aspect-ratio according to the drop size.
+                            The aspect-ratio is defined here as the ratio
+                            between the vertical and the horizontal dimensions
+                            of the drops, thus, <1 means oblate >1 means prolate
+                            and by default it is set to 1.0 (spherical)
+        elevation - scalar: elevation angle of the observing radar [deg].
+                            90 (default value) means vertically pointing
+                            and 0 means no elevation (horizontal scan).
     """
 
-    def __init__(frequency, n, sizes, canting=None, elevation=90.):
+    def __init__(self, frequency, n, sizes=np.arange(0.01, 8.5, 0.01),
+                 canting=None, elevation=90.,
+                 aspect_ratio_func=1.0):
 
-        self.frequency = frequency
+        self.frequency = frequency  # GHz
         self.n = n
-        self.sizes = sizes
-        self.canting = canting
-        self.elevation = elevation
+        self.sizes = sizes          # millimeters
+        self.canting = canting      # deg
+        self.elevation = elevation  # deg
+        self.wl = 1.e-6*c/frequency # millimeters
+        self.K2 = utilities.K2(self.n*self.n)
+        self.prefactor = np.pi**5*self.K2/self.wl**4
+
+        self._theta0 = 90.0 - self.elevation
+
+        # Deal with aspect_ratio_func
+        if hasattr(aspect_ratio_func, '__call__'):
+            self.aspect_ratio_func = aspect_ratio_func
+        elif isinstance(aspect_ratio_func, (int, float)): #exclude py2 long type
+            def constant_func(x):
+                return float(aspect_ratio_func)
+            self.aspect_ratio_func = constant_func
+            self.aspect_ratio_func.__name__ = "constant aspect ratio " + \
+                                               str(aspect_ratio_func)
+        else:
+            raise AttributeError('aspect_ratio_func must be either a callable' \
+                                 + 'or a constant a numeric value')
+
+        # Inititialize the scattering table
+        self.table = pd.DataFrame(index=self.sizes, columns=columns)
+        self.table.index.name = 'diameter[mm]'
 
 
-
-try:
-    from sys import argv
-    script, temperatures, frequencies = argv
-except:
-    temperatures = 283.15
-    frequencies = 35.5e9
-
-# frequencies = np.array([24.1e9,35.5e9,94.0e9])
-frequencies = np.array([float(frequencies)])
-c = 299792458.
-wl_m = c/frequencies
-wl_mm = wl_m*1000.0
-
-sizes = np.arange(0.01, 8.5, 0.01)
-sizes = np.arange(0.01, 3.5, 0.01)
-# sizes = np.arange(0.01, 2.5, 0.1)
-# temperatures = np.array([273.15,283.15,293.15])
-temperatures = np.array([float(temperatures)])
-
-for T in temperatures:
-    for wl, f in zip(wl_mm, frequencies):
-        table = pd.DataFrame(index=sizes, columns=['T[k]', 'wavelength[mm]',
-                                                   'K2', 'radarsx[mm2]',
-                                                   'extxs[mm2]', 'ray[mm2]'])
-        table.index.name = 'diameter[mm]'
-        m = water.n(T, f)
-        K2 = ref_utils.K2(m**2)
-        print(T, wl, K2)
-        prefactor = np.pi**5*K2/wl**4
-        for d in sizes:
+    def compute(self, verbose=False):
+        """ Computes internally the scattering properties of the series of drop
+        sizes according to the set parameters
+        """
+        for d in self.sizes:
+            ar = self.aspect_ratio_func(d)
             rain = Scatterer(radius=0.5*d,
-                             wavelength=wl,
-                             m=m,
-                             axis_ratio=1.0/tmatrix_aux.dsr_thurai_2007(d))
-            rain.Kw_sqr = K2
-            rain.or_pdf = orientation.gaussian_pdf(std=10.0)
-            rain.orient = orientation.orient_averaged_adaptive
-            rain.set_geometry(tmatrix_aux.geom_vert_back)
-            rxs = radar.radar_xsect(rain)
-            rain.set_geometry(tmatrix_aux.geom_vert_forw)
+                             wavelength=self.wl,
+                             m=self.n,
+                             axis_ratio=1.0/ar)
+            rain.Kw_sqr = self.K2
+            if self.canting is not None:
+                rain.or_pdf = orientation.gaussian_pdf(std=10.0)
+                rain.orient = orientation.orient_averaged_adaptive
+            # Set backward scattering for reflectivity calculations
+            rain.set_geometry((self._theta0, self._theta0, 0., 180., 0., 0.))
+            rxsh = radar.radar_xsect(rain, h_pol=True)
+            rxsv = radar.radar_xsect(rain, h_pol=False)
+            # Set forward scattering for attenuation and phase computing
+            rain.set_geometry((self._theta0, self._theta0, 0., 0., 0., 0.))
             ext = scatter.ext_xsect(rain)
-            ray = prefactor*d**6
-            print(d, rxs, ray, ext, T, f)
-            table.loc[d] = T, wl, K2, rxs, ext, ray
-        table.to_csv(str(T-273.15)[:2]+'C_'+str(f*1e-9)+'GHz.csv')
-exit()
-# %%
+            skdp = radar.Kdp(rain)
 
-def dB(x):
-    return 10.0*np.log10(x)
+            # Calculate Rayleigh approximation for reference
+            ray = self.prefactor*d**6
+            if verbose:
+                print(d, rxsh, rxsv, ray, ext, skdp)
+            self.table.loc[d] = rxsh, rxsv, ext, ray, skdp, ar
 
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8,4))
-ax1.plot(table['radarsx[mm2]'], table['ray[mm2]'], label='Thurai 20 deg')
-#ax1.grid()
-#ax1.set_aspect('equal')
-#ax1.set_xlabel('$\sigma_{TMAT}$  [mm$^2$]')
-#ax1.set_ylabel('$\sigma_{RAY}$  [mm$^2$]')
-#ax1.set_xlim([0,100])
-#ax1.set_ylim([0,100])
-ax2.plot(sizes, table['radarsx[mm2]']-table['ray[mm2]'], label='Thurai 20 deg')
-#ax2.grid()
-#ax2.set_ylabel('$\sigma_{TMAT}$ - $\sigma_{RAY}$')
-#ax2.set_xlabel('D$_{max}$')
-#ax2.set_ylim([-2.5, 2.5])
-#ax2.set_aspect('equal')
-#fig.suptitle('20 deg canting angle')
-#fig.tight_layout()
+    def save_text_scat_table(self, filename):
+        """ Saves the scattering table to a formatted text file and includes the
+            computing parameters as attributes in the header row.
+        """
+        key_list = ['elevation', 'canting', 'aspect_ratio_func', 'K2',
+                    'frequency', 'n', 'wl', 'prefactor']
+        properties = {k: self.__dict__[k] for k in key_list}
+        properties['aspect_ratio_func'] = self.aspect_ratio_func.__name__
+        with open(filename, 'w') as fn:
+            fn.write(str(properties)+'\n')
+        self.table.to_csv(filename, mode='a')
+
+
+    def save_binary_scat_table(self, filename):
+        raise NotImplementedError()
