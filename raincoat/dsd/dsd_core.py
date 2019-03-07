@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""
+""" DSD module
 Copyright (C) 2019 Davide Ori and RAINCOAT team - University of Cologne
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,9 +19,7 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
 
-""" DSD module
 Module class library to provide interface to commonly used DSDs form and in
 particular the Binned DSD which is ment to reproduce observational data provided
 by disdrometers

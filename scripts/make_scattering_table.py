@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-
 import numpy as np
+
 from raincoat.scatTable import water
 from raincoat.scatTable.TMMrain import scatTable
 from pytmatrix import tmatrix_aux
 
-frequencies = [9.6]
+frequencies = [94.0]
 temperatures = [273.15]
-sizes = np.arange(0.01, 0.1, 0.01)
+sizes = np.arange(0.01, 8.5, 0.01)
 
 for T in temperatures:
 	for f in frequencies:
@@ -16,7 +16,7 @@ for T in temperatures:
 						  sizes=sizes,
 						  canting=10.0,
 						  elevation=90.0,
-						  aspect_ratio_func=1.0)#tmatrix_aux.dsr_thurai_2007)
+						  aspect_ratio_func=tmatrix_aux.dsr_thurai_2007)
 
-		table.compute(verbose=True)
+		table.compute(verbose=True, procs=1)
 		table.save_text_scat_table(str(T) + '_' + str(f) + 'GHz.csv')

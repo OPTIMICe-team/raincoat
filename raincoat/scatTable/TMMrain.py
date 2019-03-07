@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-"""
+""" TMMrain module
 Copyright (C) 2019 Davide Ori and RAINCOAT team - University of Cologne
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -20,15 +20,16 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
 
-""" TMMrain module
 Python class to compute the polarimetric scattering properties of a series of
 raindrop sizes according to specified parameters. The class acts as an interface
 to the pytmatrix package which implements the T-Matrix method for single 
 spheroids.
 
 """
+from multiprocessing import Process
+from multiprocessing import Manager
+from multiprocessing import Pool
 import numpy as np
 import pandas as pd
 
@@ -101,34 +102,46 @@ class scatTable(object):
         self.table.index.name = 'diameter[mm]'
 
 
-    def compute(self, verbose=False):
+    def compute(self, verbose=False, procs=1):
         """ Computes internally the scattering properties of the series of drop
         sizes according to the set parameters
         """
-        for d in self.sizes:
-            ar = self.aspect_ratio_func(d)
-            rain = Scatterer(radius=0.5*d,
-                             wavelength=self.wl,
-                             m=self.n,
-                             axis_ratio=1.0/ar)
-            rain.Kw_sqr = self.K2
-            if self.canting is not None:
-                rain.or_pdf = orientation.gaussian_pdf(std=10.0)
-                rain.orient = orientation.orient_averaged_adaptive
-            # Set backward scattering for reflectivity calculations
-            rain.set_geometry((self._theta0, self._theta0, 0., 180., 0., 0.))
-            rxsh = radar.radar_xsect(rain, h_pol=True)
-            rxsv = radar.radar_xsect(rain, h_pol=False)
-            # Set forward scattering for attenuation and phase computing
-            rain.set_geometry((self._theta0, self._theta0, 0., 0., 0., 0.))
-            ext = scatter.ext_xsect(rain)
-            skdp = radar.Kdp(rain)
-
-            # Calculate Rayleigh approximation for reference
-            ray = self.prefactor*d**6
+        nchunk = len(self.sizes)//(procs*10) # we can multiply procs by a factor
+                                             # that makes chuncks larger than
+                                             # nprocs resulting in less cycles
+                                             # more parallel executions, but
+                                             # also more memory, take care
+        for chunk in np.array_split(self.sizes, nchunk):
+            pn = Pool(processes=procs)
+            res = pn.map(self._compute_single_size, chunk)
+            self.table.loc[chunk] = res
             if verbose:
-                print(d, rxsh, rxsv, ray, ext, skdp)
-            self.table.loc[d] = rxsh, rxsv, ext, ray, skdp, ar
+                print(self.table.loc[chunk])
+
+    
+    def _compute_single_size(self, d):
+        ar = self.aspect_ratio_func(d)
+        rain = Scatterer(radius=0.5*d,
+                         wavelength=self.wl,
+                         m=self.n,
+                         axis_ratio=1.0/ar)
+        rain.Kw_sqr = self.K2
+        if self.canting is not None:
+            rain.or_pdf = orientation.gaussian_pdf(std=10.0)
+            rain.orient = orientation.orient_averaged_adaptive
+        # Set backward scattering for reflectivity calculations
+        rain.set_geometry((self._theta0, self._theta0, 0., 180., 0., 0.))
+        rxsh = radar.radar_xsect(rain, h_pol=True)
+        rxsv = radar.radar_xsect(rain, h_pol=False)
+        # Set forward scattering for attenuation and phase computing
+        rain.set_geometry((self._theta0, self._theta0, 0., 0., 0., 0.))
+        ext = scatter.ext_xsect(rain)
+        skdp = radar.Kdp(rain)
+
+        # Calculate Rayleigh approximation for reference
+        ray = self.prefactor*d**6
+        #print(d, rxsh, rxsv, ext, ray, skdp, ar)
+        return rxsh, rxsv, ext, ray, skdp, ar
 
 
     def save_text_scat_table(self, filename):
