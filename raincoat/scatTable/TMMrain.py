@@ -106,11 +106,11 @@ class scatTable(object):
         """ Computes internally the scattering properties of the series of drop
         sizes according to the set parameters
         """
-        nchunk = len(self.sizes)//(procs*10) # we can multiply procs by a factor
-                                             # that makes chuncks larger than
-                                             # nprocs resulting in less cycles
-                                             # more parallel executions, but
-                                             # also more memory, take care
+        nchunk = len(self.sizes)//(procs*5) # we can multiply procs by a factor
+                                            # that makes chuncks larger than
+                                            # nprocs resulting in less cycles
+                                            # more parallel executions, but
+                                            # also more memory, take care
         for chunk in np.array_split(self.sizes, nchunk):
             pn = Pool(processes=procs)
             res = pn.map(self._compute_single_size, chunk)
@@ -127,8 +127,8 @@ class scatTable(object):
                          axis_ratio=1.0/ar)
         rain.Kw_sqr = self.K2
         if self.canting is not None:
-            rain.or_pdf = orientation.gaussian_pdf(std=10.0)
-            rain.orient = orientation.orient_averaged_adaptive
+            rain.or_pdf = orientation.gaussian_pdf(std=self.canting)
+            rain.orient = orientation.orient_averaged_fixed
         # Set backward scattering for reflectivity calculations
         rain.set_geometry((self._theta0, self._theta0, 0., 180., 0., 0.))
         rxsh = radar.radar_xsect(rain, h_pol=True)

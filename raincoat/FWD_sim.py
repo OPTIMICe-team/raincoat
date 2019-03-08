@@ -56,19 +56,22 @@ def FWD_sim(filename, time, log10_NPar, bin_edges):
 	A = np.zeros(len(time))
 
 	#read rain scattering tables into python with pandas as dataframe
-	scattab_df = pd.read_csv(filename)
+	scattab_df = pd.read_csv(filename, skiprows=1)
+	with open(filename, 'r') as f:
+		firstline = f.readline()
+	parameters = eval(firstline)
 
 	#set header names as variables
 	diameter = 'diameter[mm]'
-	radarxs = 'radarsx[mm2]'
+	radarxs = 'radarXSh[mm2]'
 	wavelength = 'wavelength[mm]'
-	temp = 'T[k]'
+	#temp = 'T[k]'
 	extxs = 'extxs[mm2]'
 
 	#constants
-	T = scattab_df.loc[1,temp]
-	wavelen = scattab_df.loc[1,wavelength]
-	K2 = scattab_df.loc[1,'K2']
+	#T = scattab_df.loc[1,temp] #unused
+	wavelen = parameters['wl']
+	K2 = parameters['K2']
 
 	#integration constant
 	int_const = wavelen**4 / (np.pi**5 * K2)

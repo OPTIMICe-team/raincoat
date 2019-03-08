@@ -27,8 +27,8 @@ radarfiles = glob.glob('../samplefiles/radar/mirac*.nc')
 #Events, Time and Height 
 #******************************************************************************
 
-start = pd.to_datetime('2018/09/05 12:00')
-end = pd.to_datetime('2018/09/05 12:30')
+start = pd.to_datetime('2018/09/05 10:00')
+end = pd.to_datetime('2018/09/05 15:30')
 
 #-Height definition
 height_bot = 120
@@ -39,9 +39,10 @@ height_top = 150
 #******************************************************************************
 
 #path of rain scattering tables
-filepath_rainscat = '../raincoat/scatTable/'
+filepath_rainscat = '../samplefiles/scattering/'
 #filename = filepath_rainscat + '0.C_94.0GHz.csv'
-filename = filepath_rainscat + '10C_9.6GHz.csv'
+filename = filepath_rainscat + '283.15_94.0GHz.csv'
+#filename = filepath_rainscat + '273.15_9.6GHz.csv'
 	
 
 #******************************************************************************
