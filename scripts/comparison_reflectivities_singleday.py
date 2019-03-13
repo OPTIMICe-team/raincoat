@@ -13,6 +13,9 @@ from raincoat.FWD_sim import FWD_sim
 #import raincoat.plot_func
 import raincoat.disdrometer.pars_class as pc
 from raincoat.radarFunctions import getVarTimeRange, getRadarVar
+from raincoat.dsd.dsd_core import Binned
+from raincoat.statistical_analysis.stat_anal_core import calculate_offset
+
 
 #******************************************************************************
 #Definitions and Functions
@@ -64,6 +67,21 @@ radarList = [ getVarTimeRange(getRadarVar(i, '2001.01.01. 00:00:00', 'Ze'), heig
 radarData = xr.concat(radarList, 'time')
 radarFlat = 10.0*np.log10(radarData.values.flatten())
 
-n, bins, patches = plt.hist(radarFlat, range=[-20, 40], bins=50, density=True)
-n, bins, patches = plt.hist(fwd_DF['Ze_tmm'] - fwd_DF['A']*0.0005*(height_top+height_bot), range=[-20, 40], bins=50, density=True)
+#*****************************************************************************
+#statistical analysis
+#*****************************************************************************
+offset_dic = calculate_offset(radarFlat,fwd_DF['Ze_tmm'] - fwd_DF['A']*0.0005*(height_top+height_bot),method='all',binsize = 50,range_val=[-20,30],shiftrange=20,shiftstep=0.1)
+
+#display the raw and fwd operated histograms
+n, bins, patches = plt.hist(radarFlat, range=[-20, 40], bins=50, density=True,label='raw radar Ze',alpha=0.5)
+n, bins, patches = plt.hist(fwd_DF['Ze_tmm'] - fwd_DF['A']*0.0005*(height_top+height_bot), range=[-20, 40], bins=50, density=True,label='fwd op Ze',alpha=0.5)
+#display the shifted histograms
+if "offset_calc_median" in offset_dic.keys():
+  n, bins, patches = plt.hist(radarFlat+offset_dic["offset_calc_median"], range=[-20, 40], bins=50, density=True,label='median corrected (+ {0:.2f})'.format(offset_dic["offset_calc_median"]),alpha=0.5)
+if "offset_calc_overlap" in offset_dic.keys():
+  n, bins, patches = plt.hist(radarFlat+offset_dic["offset_calc_overlap"], range=[-20, 40], bins=50, density=True,label='max. overlap corrected (+ {0:.2f})'.format(offset_dic["offset_calc_overlap"]),alpha=0.5)
+if "offset_calc_cumulative_dist" in offset_dic.keys():
+	n, bins, patches = plt.hist(radarFlat+offset_dic["offset_calc_cumulative_dist"], range=[-20, 40], bins=50, density=True,label='max. cumul. dist corrected (+ {0:.2f})'.format(offset_dic["offset_calc_cumulative_dist"]),alpha=0.5)
+
+plt.legend()
 plt.show()
