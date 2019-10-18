@@ -43,7 +43,7 @@ def offset_calc_median(dist1,dist2,shiftrange):
     offset = median_dist2-median_dist1
     #check if the calculated offset is in the possible shift range
     if offset>shiftrange:
-        print "warning in statistical_analysys.methods: offset derived from median-method is bigger than shiftrange={0:.2f}".format(shiftrange)
+        print("warning in statistical_analysys.methods: offset derived from median-method is bigger than shiftrange={0:.2f}".format(shiftrange))
     
     return offset
 
@@ -84,7 +84,7 @@ def offset_calc_overlap(dist1,dist2,binsize,range_val,shiftrange,shiftstep):
 
     #compare the selected overlap with the overlap at the boundaries (if that is equal we might hit the range boundaries of allowed shifts)
     if overlap_area[index_of_biggest_overlap]==overlap_area[0] or overlap_area[index_of_biggest_overlap]==overlap_area[-1]:
-        print "warning in statistical_analysys.methods: offset derived from overlap-method is bigger (or equal) than the shiftrange={0:.2f}".format(shiftrange)
+        print ("warning in statistical_analysys.methods: offset derived from overlap-method is bigger (or equal) than the shiftrange={0:.2f}".format(shiftrange))
 
     return offset
 
@@ -115,7 +115,7 @@ def offset_calc_cumulative_dist(dist1,dist2,binsize,range_val,shiftrange,shiftst
     
     #compare the selected overlap with the overlap at the boundaries (if that is equal we might hit the range boundaries of allowed shifts)
     if abs(offset)>=shiftrange:
-        print "warning in statistical_analysys.methods: offset derived from overlap-method is probably bigger (or equal) than the shiftrange={0:.2f}".format(shiftrange)
+        print("warning in statistical_analysys.methods: offset derived from overlap-method is probably bigger (or equal) than the shiftrange={0:.2f}".format(shiftrange))
     
     if display_cdf: #display the raw, forward operated and shifted cdf to evaluate this method
         import matplotlib.pyplot as plt
