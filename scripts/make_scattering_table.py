@@ -5,9 +5,9 @@ from raincoat.scatTable import water
 from raincoat.scatTable.TMMrain import scatTable
 from pytmatrix import tmatrix_aux
 
-f = 9.6
-T = 273.15
-sizes = np.arange(0.01, 8.5, 0.01)
+f = 9.6 #GHz
+T = 273.15 # Kelvin
+sizes = np.arange(0.01, 8.5, 0.01) # mm
 
 table = scatTable(frequency=f,
 				  n=water.n(T, f*1.e9),
