@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from __future__ import print_function
 import numpy as np
 from scipy import stats
 
@@ -84,7 +84,7 @@ def offset_calc_overlap(dist1,dist2,binsize,range_val,shiftrange,shiftstep):
 
     #compare the selected overlap with the overlap at the boundaries (if that is equal we might hit the range boundaries of allowed shifts)
     if overlap_area[index_of_biggest_overlap]==overlap_area[0] or overlap_area[index_of_biggest_overlap]==overlap_area[-1]:
-        print ("warning in statistical_analysys.methods: offset derived from overlap-method is bigger (or equal) than the shiftrange={0:.2f}".format(shiftrange))
+        print("warning in statistical_analysys.methods: offset derived from overlap-method is bigger (or equal) than the shiftrange={0:.2f}".format(shiftrange))
 
     return offset
 

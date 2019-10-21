@@ -75,3 +75,9 @@ if "offset_calc_cumulative_dist" in offset_dic.keys():
 
 plt.legend()
 plt.show()
+
+# Test reflectivities
+plt.figure()
+plt.scatter(pDF.Ze, fwd_DF.Ze_tmm);
+plt.scatter(pDF.Ze, fwd_DF.Ze_ray)
+plt.show()
