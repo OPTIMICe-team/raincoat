@@ -1,19 +1,15 @@
 # -*- coding: utf-8 -*-
-import sys
-sys.path.append('../../raincoat/')
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import xarray as xr
 import glob
 
-# from raincoat.dsd.dsd_core import Binned
 from raincoat.disdrometer.read_parsivel import readPars
 from raincoat.FWD_sim import FWD_sim
 #import raincoat.plot_func
 import raincoat.disdrometer.pars_class as pc
 from raincoat.radarFunctions import getVarTimeRange, getRadarVar
-# from raincoat.dsd.dsd_core import Binned
 from raincoat.statistical_analysis.stat_anal_core import calculate_offset
 
 
