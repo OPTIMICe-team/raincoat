@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from methods import offset_calc_median,offset_calc_overlap,offset_calc_cumulative_dist
+from .methods import offset_calc_median,offset_calc_overlap,offset_calc_cumulative_dist
 
 '''
 this is the core of the statistical analysis and calls different methods which estimate the offset of the reflectivity distribution

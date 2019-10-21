@@ -28,8 +28,10 @@ def readPars(fileName):
 
 	zPar_raw = parsNC.variables['Ze'][:] 				# dB
 	tPar_raw = parsNC.variables['time'][:] 				# seconds since 1/1/1970 00:00:00
-	vPar_raw = parsNC.variables['vmean'][:]				# m/s
-	log10_NPar_raw = parsNC.variables['dmean'][:]		# log10(m-3 mm-1)
+	#vPar_raw = parsNC.variables['vmean'][:]				# m/s
+	vPar_raw = parsNC.variables['vd'][:]				# m/s
+	#log10_NPar_raw = parsNC.variables['dmean'][:]		# log10(m-3 mm-1)
+	log10_NPar_raw = parsNC.variables['nd'][:]		# log10(m-3 mm-1)
 	rainratePar_raw = parsNC.variables['rr'][:] 	# mm/h
 
 	#check for type (as some files contained masked arrays) # IS THIS REALLY NECESSARY?

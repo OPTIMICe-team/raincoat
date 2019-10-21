@@ -45,7 +45,7 @@ height_top = 150
 filepath_rainscat = '../samplefiles/scattering/'
 #filename = filepath_rainscat + '0.C_94.0GHz.csv'
 filename = filepath_rainscat + '283.15_94.0GHz.csv'
-#filename = filepath_rainscat + '273.15_9.6GHz.csv'
+filename = filepath_rainscat + '273.15_9.6GHz.csv'
 	
 
 #******************************************************************************
