@@ -45,7 +45,7 @@ height_top = 150
 filepath_rainscat = '../samplefiles/scattering/'
 #filename = filepath_rainscat + '0.C_94.0GHz.csv'
 filename = filepath_rainscat + '283.15_94.0GHz.csv'
-filename = filepath_rainscat + '273.15_9.6GHz.csv'
+#filename = filepath_rainscat + '273.15_9.6GHz.csv'
 	
 
 #******************************************************************************
@@ -84,4 +84,10 @@ if "offset_calc_cumulative_dist" in offset_dic.keys():
 	n, bins, patches = plt.hist(radarFlat+offset_dic["offset_calc_cumulative_dist"], range=[-20, 40], bins=50, density=True,label='max. cumul. dist corrected (+ {0:.2f})'.format(offset_dic["offset_calc_cumulative_dist"]),alpha=0.5)
 
 plt.legend()
+plt.show()
+
+# Test reflectivities
+plt.figure()
+plt.scatter(pDF.Ze, fwd_DF.Ze_tmm);
+plt.scatter(pDF.Ze, fwd_DF.Ze_ray)
 plt.show()
