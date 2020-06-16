@@ -11,6 +11,7 @@ Also we might better be strict to CF convention by default. If CF is not used th
 It would be great to have a function that can take a list of files and concatenate them already
 '''
 
+
 def getRadarVar(filePath, refTime, varName):
 
     """ This function reads the radar netCDF files and
@@ -54,9 +55,9 @@ def getVarTimeRange(dataArray, rangeMin, rangeMax,
 
         dataArray : xarray DataArray of the variable
 
-        rangeMin : minimum range
+        rangeMin : minimum range in m
 
-        rangeMax : maximum range
+        rangeMax : maximum range in m
 
         timeStrt : starting time (pandas datetime)
 
@@ -81,7 +82,7 @@ def getFlatVar(dataArray):
     """This function flattens the variable and
        removes the nan and inf values.
 
-       Argment
+       Argument
        -------
 
        dataArray : xarray DataArray of the variable
