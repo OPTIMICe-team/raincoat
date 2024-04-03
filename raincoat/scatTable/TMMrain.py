@@ -130,7 +130,7 @@ class scatTable(object):
             rain.or_pdf = orientation.gaussian_pdf(std=self.canting)
             rain.orient = orientation.orient_averaged_fixed
         # Set backward scattering for reflectivity calculations
-        rain.set_geometry((self._theta0, self._theta0, 0., 180., 0., 0.))
+        rain.set_geometry((self._theta0, 180. - self._theta0, 0., 180., 0., 0.))
         rxsh = radar.radar_xsect(rain, h_pol=True)
         rxsv = radar.radar_xsect(rain, h_pol=False)
         # Set forward scattering for attenuation and phase computing
